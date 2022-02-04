@@ -29,7 +29,24 @@ const listAllUsers = async (req, res, next) => {
   }
 };
 
+const listUserById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await Users.findByPk(id);
+    if (!user) {
+      const error = { status: 404, message: 'User does not exist' };
+      throw error;
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error(error.message);
+    next(error);
+  }
+};
+
 module.exports = {
   newUser,
   listAllUsers,
+  listUserById,
 };

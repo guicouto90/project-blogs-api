@@ -27,7 +27,7 @@ const validateToken = (req, res, next) => {
     next();
   } catch (error) {
     console.error(error.message);
-    if (error.message === 'jwt malformed') {
+    if (error.message === 'jwt malformed' || error.message === 'invalid signature') {
       const error1 = { status: 401, message: 'Expired or invalid token' };
       next(error1);
     }
