@@ -13,6 +13,20 @@ const generateToken = (email) => {
   return token;
 };
 
+const validateToken = (req, res, next) => {
+  try {
+    const { authorization } = req.headers;
+    const { email } = jwt.verify(authorization, secret);
+    req.email = email;
+
+    next();
+  } catch (error) {
+    console.error(error.message);
+    next(error);
+  }
+};
+
 module.exports = {
   generateToken,
+  validateToken,
 };
