@@ -18,6 +18,18 @@ const newUser = async (req, res, next) => {
   }
 };
 
+const listAllUsers = async (req, res, next) => {
+  try {
+    const result = await Users.findAll();
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error(error.message);
+    next(error);
+  }
+};
+
 module.exports = {
   newUser,
+  listAllUsers,
 };

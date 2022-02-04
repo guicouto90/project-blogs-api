@@ -16,12 +16,21 @@ const generateToken = (email) => {
 const validateToken = (req, res, next) => {
   try {
     const { authorization } = req.headers;
+    if (!authorization) {
+      const error = { status: 401, message: 'Token not found' };
+      throw error;
+    }
     const { email } = jwt.verify(authorization, secret);
+
     req.email = email;
 
     next();
   } catch (error) {
     console.error(error.message);
+    if (error.message === 'jwt malformed') {
+      const error1 = { status: 401, message: 'Expired or invalid token' };
+      next(error1);
+    }
     next(error);
   }
 };
