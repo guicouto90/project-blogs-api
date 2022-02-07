@@ -19,6 +19,18 @@ const newPost = async (req, res, next) => {
   }
 };
 
+const listAllPosts = async(req, res, next) => {
+  try {
+    const result =  await BlogPosts.findAll({ include: { model: Users, as: 'user', attributes: { exclude: ['password'] } } } );
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error(error.message);
+    next(error);
+  }
+}
+
 module.exports = {
   newPost,
+  listAllPosts
 };
