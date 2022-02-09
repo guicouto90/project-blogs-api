@@ -4,7 +4,9 @@ const {
   findUser, 
   addPost, 
   addPostCategories, 
-  getAllPosts, 
+  getAllPosts,
+  getPostById,
+  findPostById, 
 } = require('../services/postsService');
 
 const newPost = async (req, res, next) => {
@@ -35,7 +37,22 @@ const listAllPosts = async (req, res, next) => {
   }
 };
 
+const listPostById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    await findPostById(id);
+    const result = await getPostById(id);
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error(error.message);
+    next(error);
+  }
+};
+
 module.exports = {
   newPost,
   listAllPosts,
+  listPostById,
 };
