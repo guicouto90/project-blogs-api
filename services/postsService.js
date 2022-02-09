@@ -1,5 +1,5 @@
 const Joi = require('@hapi/joi');
-const { Users, BlogPosts, Categories, PostCategories } = require('../models');
+const { Users, BlogPosts, Categories, PostsCategories } = require('../models');
 
 const postsSchema = Joi.object({
   title: Joi.string().min(1).required(),
@@ -36,9 +36,9 @@ const addPost = async (title, content, userId) => {
   return id;
 };
 
-const addPostCategories = async (blogpostsId, categoryIds) => {
+const addPostCategories = async (postId, categoryIds) => {
   await Promise.all(categoryIds.map(async (categoryId) => {
-    await PostCategories.create({ blogpostsId, categoryId });
+    await PostsCategories.create({ postId, categoryId });
    }));
 };
 
