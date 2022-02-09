@@ -10,6 +10,18 @@ const validateCategories = (name) => {
   if (error) throw error;
 };
 
+const addCategories = async (name) => {
+  const categories = await Categories.create({ name });
+
+  return categories;
+};
+
+const getAllCategories = async () => {
+  const categories = await Categories.findAll();
+
+  return categories;
+};
+
 const categoriesExist = async (categoryIds) => {
   await Promise.all(categoryIds.map(async (category) => {
     const categoryId = await Categories.findByPk(category);
@@ -23,4 +35,6 @@ const categoriesExist = async (categoryIds) => {
 module.exports = {
   validateCategories,
   categoriesExist,
+  addCategories,
+  getAllCategories,
 };

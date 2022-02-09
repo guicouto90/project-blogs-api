@@ -15,10 +15,13 @@ module.exports = {
         type: Sequelize.STRING
       },
       userId: {
-        type: Sequelize.INTEGER
-      },
-      categoryIds: {
-        type: Sequelize.JSON
+        type: Sequelize.INTEGER,
+          allowNull: false,
+          defaultValue: 1,
+          references: {
+            model: 'Users',
+            key: 'id',
+          },
       },
       published: {
         type: Sequelize.DATE

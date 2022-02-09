@@ -1,6 +1,11 @@
-const { Users, BlogPosts } = require('../models');
 const { categoriesExist } = require('../services/categoriesService');
-const { validatePost } = require('../services/postsService');
+const { 
+  validatePost, 
+  findUser, 
+  addPost, 
+  addPostCategories, 
+  getAllPosts, 
+} = require('../services/postsService');
 
 const newPost = async (req, res, next) => {
   try {
@@ -8,9 +13,10 @@ const newPost = async (req, res, next) => {
     const { title, content, categoryIds } = req.body;
     await categoriesExist(categoryIds);
     const { email } = req;
-    const user = await Users.findOne({ where: { email } });
-    const userId = user.id;
-    const { id } = await BlogPosts.create({ title, content, userId, categoryIds });
+    const userId = await findUser(email);
+    const id = await addPost(title, content, userId);
+    await addPostCategories(id, categoryIds);
+    
     const post = { id, userId, title, content };
     return res.status(201).json(post);
   } catch (error) {
@@ -19,18 +25,17 @@ const newPost = async (req, res, next) => {
   }
 };
 
-const listAllPosts = async(req, res, next) => {
+const listAllPosts = async (req, res, next) => {
   try {
-    const result =  await BlogPosts.findAll({ include: { model: Users, as: 'user', attributes: { exclude: ['password'] } } } );
-
+    const result = await getAllPosts();
     return res.status(200).json(result);
   } catch (error) {
     console.error(error.message);
     next(error);
   }
-}
+};
 
 module.exports = {
   newPost,
-  listAllPosts
+  listAllPosts,
 };

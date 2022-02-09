@@ -1,13 +1,17 @@
-const { Categories } = require('../models');
-const { validateCategories } = require('../services/categoriesService');
+const { 
+  validateCategories, 
+  addCategories, 
+  getAllCategories, 
+} = require('../services/categoriesService');
 
 const newCategorie = async (req, res, next) => {
   try {
     const { name } = req.body;
     validateCategories(name);
-    const categorie = await Categories.create({ name });
+    
+    const result = await addCategories(name);
 
-    return res.status(201).json(categorie);
+    return res.status(201).json(result);
   } catch (error) {
     console.error(error.message);
     next(error);
@@ -16,9 +20,9 @@ const newCategorie = async (req, res, next) => {
 
 const listAllCategories = async (req, res, next) => {
   try {
-    const categories = await Categories.findAll();
+    const result = await getAllCategories();
 
-    return res.status(200).json(categories);
+    return res.status(200).json(result);
   } catch (error) {
     console.error(error.message);
     next(error);

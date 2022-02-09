@@ -1,13 +1,21 @@
-const { verifyUser } = require('../services/usersService');
-const { Users } = require('../models');
+const { 
+  verifyUser, 
+  addUser, 
+  findUserByEmail, 
+  findAllUsers, 
+  findUserById, 
+} = require('../services/usersService');
+
 const { generateToken } = require('../middlewares/auth');
 
 const newUser = async (req, res, next) => {
   try {
     const { displayName, email, password, image } = req.body;
-    await verifyUser(displayName, email, password, image);
+    verifyUser(displayName, email, password, image);
 
-    await Users.create({ displayName, email, password, image });
+    await findUserByEmail(email);
+
+    await addUser(displayName, email, password, image);
 
     const token = generateToken(email);
 
@@ -20,7 +28,7 @@ const newUser = async (req, res, next) => {
 
 const listAllUsers = async (req, res, next) => {
   try {
-    const result = await Users.findAll();
+    const result = await findAllUsers();
 
     return res.status(200).json(result);
   } catch (error) {
@@ -32,11 +40,8 @@ const listAllUsers = async (req, res, next) => {
 const listUserById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const user = await Users.findByPk(id);
-    if (!user) {
-      const error = { status: 404, message: 'User does not exist' };
-      throw error;
-    }
+
+    const user = await findUserById(id);
 
     return res.status(200).json(user);
   } catch (error) {

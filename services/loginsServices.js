@@ -1,5 +1,5 @@
 const Joi = require('@hapi/joi');
-const { Users } = require('../models');
+const { Users, Login } = require('../models');
 
 const loginSchema = Joi.object({
   email: Joi.string().email().required().not()
@@ -15,14 +15,17 @@ const validateLogin = async (email, password) => {
 
   const valid = await Users.findOne({ where: { email } });
 
-  console.log(valid);
   if (!valid || valid.password !== password) {
-    console.log('POR QUE?');
     const error1 = { status: 400, message: 'Invalid fields' };
     throw error1;
   }
 };
 
+const addLogin = async (email, password) => {
+  await Login.create({ email, password });
+};
+
 module.exports = {
   validateLogin,
+  addLogin,
 };

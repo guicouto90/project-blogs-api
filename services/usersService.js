@@ -8,11 +8,13 @@ const userSchema = Joi.object({
   image: Joi.string().required(),
 });
 
-const verifyUser = async (displayName, email, password, image) => {
+const verifyUser = (displayName, email, password, image) => {
   const { error } = userSchema.validate({ displayName, email, password, image });
 
   if (error) throw error;
+};
 
+const findUserByEmail = async (email) => {
   const user = await Users.findOne({ where: { email } });
   if (user) {
     const error1 = { status: 409, message: 'User already registered' };
@@ -20,6 +22,29 @@ const verifyUser = async (displayName, email, password, image) => {
   }
 };
 
+const addUser = async (displayName, email, password, image) => {
+  await Users.create({ displayName, email, password, image });
+};
+
+const findAllUsers = async () => {
+  const results = Users.findAll();
+
+  return results;
+};
+
+const findUserById = async (id) => {
+  const user = await Users.findByPk(id);
+  if (!user) {
+    const error = { status: 404, message: 'User does not exist' };
+    throw error;
+  }
+  return user;
+};
+
 module.exports = {
   verifyUser,
+  addUser,
+  findUserByEmail,
+  findAllUsers,
+  findUserById,
 };
