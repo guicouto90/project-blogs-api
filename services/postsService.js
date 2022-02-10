@@ -7,9 +7,25 @@ const postsSchema = Joi.object({
   content: Joi.string().min(1).required(),
 });
 
+const putSchema = Joi.object({
+  title: Joi.string().min(1).required(),
+  content: Joi.string().min(1).required(),
+});
+
 const validatePost = (body) => {
   const { title, categoryIds, content } = body;
   const { error } = postsSchema.validate({ title, categoryIds, content });
+
+  if (error) throw error;
+};
+
+const validatePut = (body) => {
+  const { title, categoryIds, content } = body;
+  if (categoryIds) {
+    const error1 = { status: 400, message: 'Categories cannot be edited' };
+    throw error1;
+  }
+  const { error } = putSchema.validate({ title, content });
 
   if (error) throw error;
 };
@@ -60,6 +76,8 @@ const findPostById = async (id) => {
     const error = { status: 404, message: 'Post does not exist' };
     throw error;
   }
+
+  return result;
 };
 
 const getPostById = async (id) => {
@@ -72,6 +90,32 @@ const getPostById = async (id) => {
   return result;
 };
 
+const validateUser = async (id, email) => {
+  const { userId } = await findPostById(id);
+  const user = await Users.findOne({ where: { email } });
+  if (user.id !== userId) {
+    const error = { status: 401, message: 'Unauthorized user' };
+    throw error;
+  }
+};
+
+// REF: https://stackoverflow.com/questions/69836342/how-to-use-both-include-and-attributes-in-findbypk-statement-in-sequelize
+const editPost = async (id, title, content) => {
+  await BlogPosts.update(
+    { title, 
+      content,
+      updated: new Date().toISOString(),
+    }, { where: { id } },
+);
+
+  const result = await BlogPosts.findByPk(id,
+    { 
+      include: { model: Categories, as: 'categories', through: { attributes: [] } },
+      attributes: { exclude: ['id', 'published', 'updated'] },
+    });
+  return result;
+};
+
 module.exports = {
   validatePost,
   findUser,
@@ -80,4 +124,7 @@ module.exports = {
   getAllPosts,
   getPostById,
   findPostById,
+  validatePut,
+  validateUser,
+  editPost,
 };
