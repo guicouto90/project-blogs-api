@@ -41,10 +41,15 @@ const findUserById = async (id) => {
   return user;
 };
 
+const eraseUser = async (email) => {
+  await Users.destroy({ where: { email } });
+};
+
 module.exports = {
   verifyUser,
   addUser,
   findUserByEmail,
   findAllUsers,
   findUserById,
+  eraseUser,
 };

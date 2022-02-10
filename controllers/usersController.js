@@ -3,7 +3,8 @@ const {
   addUser, 
   findUserByEmail, 
   findAllUsers, 
-  findUserById, 
+  findUserById,
+  eraseUser, 
 } = require('../services/usersService');
 
 const { generateToken } = require('../middlewares/auth');
@@ -50,8 +51,21 @@ const listUserById = async (req, res, next) => {
   }
 };
 
+const deleteUser = async (req, res, next) => {
+  try {
+    const { email } = req;
+    await eraseUser(email);
+
+    return res.status(204).json({});
+  } catch (error) {
+    console.error(error.message);
+    next(error);
+  }
+};
+
 module.exports = {
   newUser,
   listAllUsers,
   listUserById,
+  deleteUser,
 };
