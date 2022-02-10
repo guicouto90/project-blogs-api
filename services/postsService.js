@@ -120,6 +120,13 @@ const erasePost = async (id) => {
   await BlogPosts.destroy({ where: { id } });
 };
 
+const findByQuery = async (q) => {
+  const posts = await getAllPosts();
+  const result = posts.filter((post) => post.title.includes(q) || post.content.includes(q));
+
+  return result || posts;
+};
+
 module.exports = {
   validatePost,
   findUser,
@@ -132,4 +139,5 @@ module.exports = {
   validateUser,
   editPost,
   erasePost,
+  findByQuery,
 };

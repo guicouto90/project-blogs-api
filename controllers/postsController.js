@@ -10,7 +10,8 @@ const {
   validatePut,
   validateUser,
   editPost,
-  erasePost, 
+  erasePost,
+  findByQuery, 
 } = require('../services/postsService');
 
 const newPost = async (req, res, next) => {
@@ -85,10 +86,23 @@ const deletePostById = async (req, res, next) => {
   }
 };
 
+const listByQuery = async (req, res, next) => {
+  try {
+    const { q } = req.query;
+    const result = await findByQuery(q);
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error(error.message);
+    next(error);
+  }
+};
+
 module.exports = {
   newPost,
   listAllPosts,
   listPostById,
   updatePostById,
   deletePostById,
+  listByQuery,
 };
