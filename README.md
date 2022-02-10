@@ -9,6 +9,7 @@ Basta clonar o repositório e instalar as dependencias - npm install.
 - Express;
 - Sequelize;
 - MySQL;
+- JWT
 
 ## Lista de Requisitos:
 
