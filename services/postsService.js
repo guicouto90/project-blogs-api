@@ -116,6 +116,10 @@ const editPost = async (id, title, content) => {
   return result;
 };
 
+const erasePost = async (id) => {
+  await BlogPosts.destroy({ where: { id } });
+};
+
 module.exports = {
   validatePost,
   findUser,
@@ -127,4 +131,5 @@ module.exports = {
   validatePut,
   validateUser,
   editPost,
+  erasePost,
 };

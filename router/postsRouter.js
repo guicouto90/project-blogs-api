@@ -3,7 +3,8 @@ const {
   newPost, 
   listAllPosts, 
   listPostById, 
-  updatePostById, 
+  updatePostById,
+  deletePostById, 
 } = require('../controllers/postsController');
 const { validateToken } = require('../middlewares/auth');
 
@@ -16,5 +17,7 @@ postsRouter.get('/', validateToken, listAllPosts);
 postsRouter.get('/:id', validateToken, listPostById);
 
 postsRouter.put('/:id', validateToken, updatePostById);
+
+postsRouter.delete('/:id', validateToken, deletePostById);
 
 module.exports = postsRouter;
