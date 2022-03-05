@@ -1,24 +1,14 @@
 const { 
-  verifyUser, 
   addUser, 
-  findUserByEmail, 
   findAllUsers, 
   findUserById,
   eraseUser, 
 } = require('../services/usersService');
 
-const { generateToken } = require('../middlewares/auth');
-
 const newUser = async (req, res, next) => {
   try {
     const { displayName, email, password, image } = req.body;
-    verifyUser(displayName, email, password, image);
-
-    await findUserByEmail(email);
-
-    await addUser(displayName, email, password, image);
-
-    const token = generateToken(email);
+    const token = await addUser(displayName, email, password, image);
 
     return res.status(201).json({ token });
   } catch (error) {

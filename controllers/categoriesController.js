@@ -1,5 +1,4 @@
 const { 
-  validateCategories, 
   addCategories, 
   getAllCategories, 
 } = require('../services/categoriesService');
@@ -7,7 +6,6 @@ const {
 const newCategorie = async (req, res, next) => {
   try {
     const { name } = req.body;
-    validateCategories(name);
     
     const result = await addCategories(name);
 

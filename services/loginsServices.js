@@ -1,5 +1,6 @@
 const Joi = require('@hapi/joi');
 const { Users, Login } = require('../models');
+const { generateToken } = require('../middlewares/auth');
 
 const loginSchema = Joi.object({
   email: Joi.string().email().required().not()
@@ -22,7 +23,13 @@ const validateLogin = async (email, password) => {
 };
 
 const addLogin = async (email, password) => {
+  await validateLogin(email, password);
+
   await Login.create({ email, password });
+
+  const token = generateToken(email);
+
+  return token;
 };
 
 module.exports = {
