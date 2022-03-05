@@ -1,5 +1,6 @@
 const Joi = require('@hapi/joi');
 const { Users } = require('../models');
+const { generateToken } = require('../middlewares/auth');
 
 const userSchema = Joi.object({
   displayName: Joi.string().min(8).required(),
@@ -23,7 +24,13 @@ const findUserByEmail = async (email) => {
 };
 
 const addUser = async (displayName, email, password, image) => {
+  verifyUser(displayName, email, password, image);
+  await findUserByEmail(email);
   await Users.create({ displayName, email, password, image });
+
+  const token = generateToken(email);
+
+  return token;
 };
 
 const findAllUsers = async () => {

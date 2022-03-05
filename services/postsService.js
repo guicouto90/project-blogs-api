@@ -1,5 +1,6 @@
 const Joi = require('@hapi/joi');
 const { Users, BlogPosts, Categories, PostsCategories } = require('../models');
+const { categoriesExist } = require('../services/categoriesService');
 
 const postsSchema = Joi.object({
   title: Joi.string().min(1).required(),
@@ -40,7 +41,17 @@ const findUser = async (email) => {
   return id;
 };
 
-const addPost = async (title, content, userId) => {
+const addPostCategories = async (postId, categoryIds) => {
+  await Promise.all(categoryIds.map(async (categoryId) => {
+    await PostsCategories.create({ postId, categoryId });
+   }));
+};
+
+const addPost = async (body, email) => {
+  const { title, content, categoryIds } = body;
+  validatePost(body);
+  await categoriesExist(categoryIds);
+  const userId = await findUser(email);
   const { id } = await BlogPosts.create({
     title, 
     content, 
@@ -48,14 +59,10 @@ const addPost = async (title, content, userId) => {
     published: new Date().toISOString(),
     updated: new Date().toISOString(),
   });
+  await addPostCategories(id, categoryIds);
+  const post = { id, userId, title, content };
 
-  return id;
-};
-
-const addPostCategories = async (postId, categoryIds) => {
-  await Promise.all(categoryIds.map(async (categoryId) => {
-    await PostsCategories.create({ postId, categoryId });
-   }));
+  return post;
 };
 
 const getAllPosts = async () => {
@@ -81,6 +88,7 @@ const findPostById = async (id) => {
 };
 
 const getPostById = async (id) => {
+  await findPostById(id);
   const result = await BlogPosts.findByPk(id,
     { include: [ 
       { model: Users, as: 'user', attributes: { exclude: ['password'] } },
@@ -100,7 +108,10 @@ const validateUser = async (id, email) => {
 };
 
 // REF: https://stackoverflow.com/questions/69836342/how-to-use-both-include-and-attributes-in-findbypk-statement-in-sequelize
-const editPost = async (id, title, content) => {
+const editPost = async (body, id, email) => {
+  const { title, content } = body;
+  validatePut(body);
+  await validateUser(id, email);
   await BlogPosts.update(
     { title, 
       content,
@@ -116,7 +127,8 @@ const editPost = async (id, title, content) => {
   return result;
 };
 
-const erasePost = async (id) => {
+const erasePost = async (id,email) => {
+  await validateUser(id, email);
   await BlogPosts.destroy({ where: { id } });
 };
 

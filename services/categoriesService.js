@@ -11,6 +11,7 @@ const validateCategories = (name) => {
 };
 
 const addCategories = async (name) => {
+  validateCategories(name);
   const categories = await Categories.create({ name });
 
   return categories;

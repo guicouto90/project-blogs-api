@@ -1,13 +1,7 @@
-const { categoriesExist } = require('../services/categoriesService');
 const { 
-  validatePost, 
-  findUser, 
   addPost, 
-  addPostCategories, 
   getAllPosts,
   getPostById,
-  findPostById,
-  validatePut,
   validateUser,
   editPost,
   erasePost,
@@ -15,16 +9,9 @@ const {
 } = require('../services/postsService');
 
 const newPost = async (req, res, next) => {
-  try {
-    validatePost(req.body);
-    const { title, content, categoryIds } = req.body;
-    await categoriesExist(categoryIds);
-    const { email } = req;
-    const userId = await findUser(email);
-    const id = await addPost(title, content, userId);
-    await addPostCategories(id, categoryIds);
+  try {    
+    const post = await addPost(req.body, req.email);
     
-    const post = { id, userId, title, content };
     return res.status(201).json(post);
   } catch (error) {
     console.error(error.message);
@@ -45,8 +32,6 @@ const listAllPosts = async (req, res, next) => {
 const listPostById = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    await findPostById(id);
     const result = await getPostById(id);
 
     return res.status(200).json(result);
@@ -58,12 +43,7 @@ const listPostById = async (req, res, next) => {
 
 const updatePostById = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const { email } = req;
-    validatePut(req.body);
-    await validateUser(id, email);
-    const { title, content } = req.body;
-    const result = await editPost(id, title, content);
+    const result = await editPost(req.body, req.params.id, req.email);
 
     return res.status(200).json(result);
   } catch (error) {
@@ -74,10 +54,7 @@ const updatePostById = async (req, res, next) => {
 
 const deletePostById = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const { email } = req;
-    await validateUser(id, email);
-    await erasePost(id);
+    await erasePost(req.params.id, req.email);
 
     return res.status(204).json({});
   } catch (error) {
