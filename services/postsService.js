@@ -1,6 +1,6 @@
 const Joi = require('@hapi/joi');
 const { Users, BlogPosts, Categories, PostsCategories } = require('../models');
-const { categoriesExist } = require('../services/categoriesService');
+const { categoriesExist } = require('./categoriesService');
 
 const postsSchema = Joi.object({
   title: Joi.string().min(1).required(),
@@ -127,7 +127,7 @@ const editPost = async (body, id, email) => {
   return result;
 };
 
-const erasePost = async (id,email) => {
+const erasePost = async (id, email) => {
   await validateUser(id, email);
   await BlogPosts.destroy({ where: { id } });
 };

@@ -2,7 +2,6 @@ const {
   addPost, 
   getAllPosts,
   getPostById,
-  validateUser,
   editPost,
   erasePost,
   findByQuery, 
